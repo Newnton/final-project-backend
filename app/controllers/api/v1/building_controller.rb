@@ -12,9 +12,16 @@ class Api::V1::BuildingController < ApplicationController
     end
 
     if building
-      render json: { building: building }
+      buildings_for_average = Building.all.where("property_floor_area < '#{building.property_floor_area + 25_000}' and property_floor_area > '#{building.property_floor_area - 25_000}'")
+      render json: {
+        building: building,
+        averages: {
+          indirectGHG: buildings_for_average.average(:indirect_GHG_emissions).to_i,
+          directGHG: buildings_for_average.average(:direct_GHG_emissions).to_i
+        }
+      }
     else
       render json: { error: 'invalid address' }
-   end
+    end
   end
 end
