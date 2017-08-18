@@ -5,7 +5,7 @@ class Api::V1::BuildingController < ApplicationController
     address = Indirizzo::Address.new(params[:address])
     buildings = Building.all.where(street_number: address.number)
 
-    if buildings
+    if buildings && address.street[0]
       building = buildings.find do |b|
         b.street_name.strip.downcase.match(address.street[0].downcase)
       end
@@ -17,10 +17,6 @@ class Api::V1::BuildingController < ApplicationController
         and property_floor_area > '#{building.property_floor_area - 25_000}'
         and site_eui < '1000'"
       )
-      # .select do |b|
-      #   b[:site_EUI] < 1000
-      # end
-      puts buildings_for_average.average(:site_eui).to_i
       render json: {
         building: building,
         averages: {
@@ -31,7 +27,7 @@ class Api::V1::BuildingController < ApplicationController
         }
       }
     else
-      render json: { error: 'invalid address' }
+      render json: { building: 'Please make sure that you entered a valid address and that the building you are looking for is larger than 50,000 sqft' }
     end
   end
 end
