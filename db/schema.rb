@@ -36,6 +36,8 @@ ActiveRecord::Schema.define(version: 20170808153621) do
     t.float "indirect_ghg_emissions"
     t.integer "property_floor_area"
     t.string "primary_property_type"
+    t.float "lat"
+    t.float "lng"
   end
 
 end

@@ -30,4 +30,18 @@ class Api::V1::BuildingController < ApplicationController
       render json: { building: 'Please make sure that you entered a valid address and that the building you are looking for is larger than 50,000 sqft' }
     end
   end
+
+  def index
+    render json: {
+      buildings: Building.all.map do |building|
+        {
+          id: building.id,
+          lat: building.lat,
+          lng: building.lng,
+          street_number: building.street_number,
+          street_name: building.street_name
+        }
+      end
+    }
+  end
 end
