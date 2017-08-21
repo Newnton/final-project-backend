@@ -44,4 +44,60 @@ class Api::V1::BuildingController < ApplicationController
       end
     }
   end
+
+  def borough_totals
+    manhattan_buildings = Building.all.where(borough: 'manhattan')
+    brooklyn_buildings = Building.all.where(borough: 'brooklyn')
+    bronx_buildings = Building.all.where(borough: 'bronx')
+    queens_buildings = Building.all.where(borough: 'queens')
+
+    borough_totals = {
+      manhattan: {
+        total_buildings: manhattan_buildings.length,
+        total_direct_ghg: manhattan_buildings.sum(:direct_ghg_emissions).to_i,
+        total_indirect_ghg: manhattan_buildings.sum(:indirect_ghg_emissions).to_i,
+        average_direct_ghg: manhattan_buildings.average(:direct_ghg_emissions).to_i,
+        average_indirect_ghg: manhattan_buildings.average(:indirect_ghg_emissions).to_i,
+        total_site_eui: manhattan_buildings.sum(:site_eui).to_i,
+        total_source_eui: manhattan_buildings.sum(:source_eui).to_i,
+        average_site_eui: manhattan_buildings.average(:site_eui).to_i,
+        average_source_eui: manhattan_buildings.average(:source_eui).to_i
+      },
+      brooklyn: {
+        total_buildings: brooklyn_buildings.length,
+        total_direct_ghg: brooklyn_buildings.sum(:direct_ghg_emissions).to_i,
+        total_indirect_ghg: brooklyn_buildings.sum(:indirect_ghg_emissions).to_i,
+        average_direct_ghg: brooklyn_buildings.average(:direct_ghg_emissions).to_i,
+        average_indirect_ghg: brooklyn_buildings.average(:indirect_ghg_emissions).to_i,
+        total_site_eui: brooklyn_buildings.sum(:site_eui).to_i,
+        total_source_eui: brooklyn_buildings.sum(:source_eui).to_i,
+        average_site_eui: brooklyn_buildings.average(:site_eui).to_i,
+        average_source_eui: brooklyn_buildings.average(:source_eui).to_i
+      },
+      queens: {
+        total_buildings: queens_buildings.length,
+        total_direct_ghg: queens_buildings.sum(:direct_ghg_emissions).to_i,
+        total_indirect_ghg: queens_buildings.sum(:indirect_ghg_emissions).to_i,
+        average_direct_ghg: queens_buildings.average(:direct_ghg_emissions).to_i,
+        average_indirect_ghg: queens_buildings.average(:indirect_ghg_emissions).to_i,
+        total_site_eui: queens_buildings.sum(:site_eui).to_i,
+        total_source_eui: queens_buildings.sum(:source_eui).to_i,
+        average_site_eui: queens_buildings.average(:site_eui).to_i,
+        average_source_eui: queens_buildings.average(:source_eui).to_i
+      },
+      bronx: {
+        total_buildings: bronx_buildings.length,
+        total_direct_ghg: bronx_buildings.sum(:direct_ghg_emissions).to_i,
+        total_indirect_ghg: bronx_buildings.sum(:indirect_ghg_emissions).to_i,
+        average_direct_ghg: bronx_buildings.average(:direct_ghg_emissions).to_i,
+        average_indirect_ghg: bronx_buildings.average(:indirect_ghg_emissions).to_i,
+        total_site_eui: bronx_buildings.sum(:site_eui).to_i,
+        total_source_eui: bronx_buildings.sum(:source_eui).to_i,
+        average_site_eui: bronx_buildings.average(:site_eui).to_i,
+        average_source_eui: bronx_buildings.average(:source_eui).to_i
+      }
+    }
+    
+    render json: borough_totals
+  end
 end
