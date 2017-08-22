@@ -1,7 +1,7 @@
 require 'Indirizzo'
 
 class Api::V1::BuildingController < ApplicationController
-  def show
+  def show_by_address
     address = Indirizzo::Address.new(params[:address])
     buildings = Building.all.where(street_number: address.number)
 
@@ -11,6 +11,15 @@ class Api::V1::BuildingController < ApplicationController
       end
     end
 
+    show(building)
+  end
+
+  def show_by_id
+    building = Building.find(params[:id])
+    show(building)
+  end
+
+  def show(building)
     if building
       buildings_for_average = Building.all.where(
         "property_floor_area < '#{building.property_floor_area + 25_000}'
@@ -31,17 +40,25 @@ class Api::V1::BuildingController < ApplicationController
     end
   end
 
+  def borough_buildings(borough)
+    Building.all.where(borough: borough).map do |building|
+      {
+        id: building.id,
+        lat: building.lat,
+        lng: building.lng,
+        street_number: building.street_number,
+        street_name: building.street_name
+      }
+    end
+  end
+
   def index
     render json: {
-      buildings: Building.all.map do |building|
-        {
-          id: building.id,
-          lat: building.lat,
-          lng: building.lng,
-          street_number: building.street_number,
-          street_name: building.street_name
-        }
-      end
+      manhattan: self.borough_buildings('manhattan'),
+      bronx: self.borough_buildings('bronx'),
+      queens: self.borough_buildings('queens'),
+      brooklyn: self.borough_buildings('brooklyn'),
+      staten: self.borough_buildings('staten island')
     }
   end
 
@@ -50,6 +67,7 @@ class Api::V1::BuildingController < ApplicationController
     brooklyn_buildings = Building.all.where(borough: 'brooklyn')
     bronx_buildings = Building.all.where(borough: 'bronx')
     queens_buildings = Building.all.where(borough: 'queens')
+    staten_buildings = Building.all.where(borough: 'staten island')
 
     borough_totals = {
       manhattan: {
@@ -95,9 +113,20 @@ class Api::V1::BuildingController < ApplicationController
         total_source_eui: bronx_buildings.sum(:source_eui).to_i,
         average_site_eui: bronx_buildings.average(:site_eui).to_i,
         average_source_eui: bronx_buildings.average(:source_eui).to_i
+      },
+      staten: {
+        total_buildings: staten_buildings.length,
+        total_direct_ghg: staten_buildings.sum(:direct_ghg_emissions).to_i,
+        total_indirect_ghg: staten_buildings.sum(:indirect_ghg_emissions).to_i,
+        average_direct_ghg: staten_buildings.average(:direct_ghg_emissions).to_i,
+        average_indirect_ghg: staten_buildings.average(:indirect_ghg_emissions).to_i,
+        total_site_eui: staten_buildings.sum(:site_eui).to_i,
+        total_source_eui: staten_buildings.sum(:source_eui).to_i,
+        average_site_eui: staten_buildings.average(:site_eui).to_i,
+        average_source_eui: staten_buildings.average(:source_eui).to_i
       }
     }
-    
+
     render json: borough_totals
   end
 end

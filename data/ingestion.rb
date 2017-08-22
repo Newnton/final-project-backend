@@ -39,7 +39,7 @@ new_list = []
 old_list = CSV.read(ARGV[0], 'r:windows-1251:utf-8', headers: true, skip_blanks: true).reject { |row| row.to_hash.values.all?(&:nil?) }
 
 old_list.each do |row|
-  new_list << row unless row['id'].to_i > 3292 || row['street_name'] == nil
+  new_list << row unless row['street_name'] == nil
 end
 
 
@@ -68,7 +68,7 @@ CSV.open(ARGV[1], 'wb') do |csv|
     puts row
     latLng = getLatLng(row)
     csv << [
-      i+3291,
+      i,
       !row['bbl'].nil? ? row['bbl'].strip : nil,
       !row['bin'].nil? ? row['bin'].strip : nil,
       !row['street_number'].nil? ? row['street_number'].strip : nil,
