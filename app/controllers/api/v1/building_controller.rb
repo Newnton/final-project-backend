@@ -19,6 +19,10 @@ class Api::V1::BuildingController < ApplicationController
     show(building)
   end
 
+  def do_nothing
+    render json: {nothing: 'doing nothing'}
+  end
+
   def show(building)
     if building
       buildings_for_average = Building.all.where(
